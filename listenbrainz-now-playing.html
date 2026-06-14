@@ -421,7 +421,7 @@
       </a>`;
 
     if (!cover){
-      fetchFallbackCover(artist, track, album).then(function(url){
+      fetchFallbackCover(artist, title, album).then(function(url){
         if (!url) return;
         const fallback = root.querySelector(".art-fallback");
         if (!fallback) return;
