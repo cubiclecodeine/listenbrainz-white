@@ -320,6 +320,24 @@
     return null;
   }
 
+  function appleMusicId(meta){
+    const url = meta && meta.additional_info && meta.additional_info.origin_url;
+    if (!url) return null;
+    const m = url.match(/music\.apple\.com\/.*\/song\/(\d+)/);
+    return m ? m[1] : null;
+  }
+
+  async function fetchAppleCover(songId){
+    try {
+      const data = await fetchJSON(`https://itunes.apple.com/lookup?id=${encodeURIComponent(songId)}`);
+      const result = data && data.results && data.results[0];
+      if (result && result.artworkUrl100){
+        return result.artworkUrl100.replace(/\/\d+x\d+bb\.jpg$/, "/250x250bb.jpg");
+      }
+    } catch(e){}
+    return null;
+  }
+
   function ago(ts){
     if (!ts) return "";
     const s = Math.max(1, Math.floor(Date.now()/1000 - ts));
@@ -379,6 +397,8 @@
            <span class="paused-dot"></span> Last Played${when ? " · " + esc(when) : ""}
          </div>`;
 
+    const appleId = cover ? null : appleMusicId(meta);
+
     const art = cover
       ? `<img class="art" alt="" src="${esc(cover)}"
               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'art art-fallback',textContent:'\\u266A'}))">`
@@ -402,6 +422,20 @@
           </div>
         </div>
       </a>`;
+
+    if (appleId){
+      fetchAppleCover(appleId).then(function(url){
+        if (!url) return;
+        const fallback = root.querySelector(".art-fallback");
+        if (!fallback) return;
+        const img = document.createElement("img");
+        img.className = "art";
+        img.alt = "";
+        img.src = url;
+        img.onerror = function(){ img.replaceWith(Object.assign(document.createElement("div"), {className:"art art-fallback", textContent:"♪"})); };
+        fallback.replaceWith(img);
+      });
+    }
   }
 
   function renderLoading(){
