@@ -83,6 +83,24 @@ Sizing notes:
 - `180px` height fits the card with no scrollbar
 - `border-radius` on the iframe clips the widget corners to match the card's rounded edges
 
+### Cover art
+
+The widget resolves album art from two sources, in order:
+
+1. **Cover Art Archive** — ListenBrainz asynchronously maps each listen to a MusicBrainz release
+   and stores the result in a `mbid_mapping` field. When that mapping is present the widget fetches
+   the artwork directly from the [Cover Art Archive](https://coverartarchive.org/). This is the
+   primary source and works for any music service.
+
+2. **iTunes / Apple Music fallback** — When a track is actively playing, `mbid_mapping` hasn't
+   been populated yet (ListenBrainz processes listens in the background after they're submitted).
+   If the track was scrobbled from Apple Music, the widget extracts the song ID from the
+   `origin_url` in the listen metadata and looks up artwork via the
+   [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/).
+   The art appears a moment after the card renders, once the lookup completes.
+
+If neither source returns art, the widget shows a music note placeholder.
+
 ### How it works
 
 - Polls the [ListenBrainz API](https://listenbrainz.org/api/) every 20 seconds
