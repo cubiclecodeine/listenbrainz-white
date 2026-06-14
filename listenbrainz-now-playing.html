@@ -320,19 +320,18 @@
     return null;
   }
 
-  function appleMusicId(meta){
-    const url = meta && meta.additional_info && meta.additional_info.origin_url;
-    if (!url) return null;
-    const m = url.match(/music\.apple\.com\/.*\/song\/(\d+)/);
-    return m ? m[1] : null;
-  }
-
-  async function fetchAppleCover(songId){
+  async function fetchFallbackCover(artist, track, album){
+    if (!track || !artist) return null;
     try {
-      const data = await fetchJSON(`https://itunes.apple.com/lookup?id=${encodeURIComponent(songId)}`);
-      const result = data && data.results && data.results[0];
-      if (result && result.artworkUrl100){
-        return result.artworkUrl100.replace(/\/\d+x\d+bb\.jpg$/, "/250x250bb.jpg");
+      let q = `recording:"${track}" AND artist:"${artist}"`;
+      if (album) q += ` AND release:"${album}"`;
+      const data = await fetchJSON(
+        `https://musicbrainz.org/ws/2/recording/?query=${encodeURIComponent(q)}&fmt=json&limit=5`
+      );
+      for (const rec of (data.recordings || [])){
+        for (const rel of (rec.releases || [])){
+          if (rel.id) return `https://coverartarchive.org/release/${rel.id}/front-250`;
+        }
       }
     } catch(e){}
     return null;
@@ -397,8 +396,6 @@
            <span class="paused-dot"></span> Last Played${when ? " · " + esc(when) : ""}
          </div>`;
 
-    const appleId = cover ? null : appleMusicId(meta);
-
     const art = cover
       ? `<img class="art" alt="" src="${esc(cover)}"
               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'art art-fallback',textContent:'\\u266A'}))">`
@@ -423,8 +420,8 @@
         </div>
       </a>`;
 
-    if (appleId){
-      fetchAppleCover(appleId).then(function(url){
+    if (!cover){
+      fetchFallbackCover(artist, track, album).then(function(url){
         if (!url) return;
         const fallback = root.querySelector(".art-fallback");
         if (!fallback) return;

@@ -92,12 +92,11 @@ The widget resolves album art from two sources, in order:
    the artwork directly from the [Cover Art Archive](https://coverartarchive.org/). This is the
    primary source and works for any music service.
 
-2. **iTunes / Apple Music fallback** — When a track is actively playing, `mbid_mapping` hasn't
-   been populated yet (ListenBrainz processes listens in the background after they're submitted).
-   If the track was scrobbled from Apple Music, the widget extracts the song ID from the
-   `origin_url` in the listen metadata and looks up artwork via the
-   [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/).
-   The art appears a moment after the card renders, once the lookup completes.
+2. **MusicBrainz search fallback** — When `mbid_mapping` is absent (the track is actively playing
+   and hasn't been processed yet, or ListenBrainz couldn't match it), the widget searches the
+   [MusicBrainz API](https://musicbrainz.org/doc/MusicBrainz_API) by artist, track name, and album,
+   then uses the first matching release MBID to fetch art from Cover Art Archive. The card renders
+   immediately with a music note placeholder; the art swaps in once the search completes.
 
 If neither source returns art, the widget shows a music note placeholder.
 
