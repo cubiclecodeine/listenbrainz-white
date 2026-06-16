@@ -334,7 +334,7 @@
       if (!releases.length){ renderEmpty("No listening data found for this period."); return; }
 
       const top5  = releases.slice(0, 5);
-      const title = "My Top 5 Albums " + (RANGE_TITLES[range] || "");
+      const title = "Top 5 Artists " + (RANGE_TITLES[range] || "");
       const dates = dateLabel(payload, range);
 
       // Pre-fetch all cover art as data-URLs in parallel
