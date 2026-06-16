@@ -1,6 +1,10 @@
 # ListenBrainz Widgets
 
-Two self-hosted widgets for your [ListenBrainz](https://listenbrainz.org) listening history:
+[Check out the landing page](https://prcutler.github.io/listenbrainz-widget/index.html) for the widgets here to see them in action.
+
+## About
+
+Two widgets hosted on GitHub Pages for your [ListenBrainz](https://listenbrainz.org) listening history:
 a live **Now Playing** card you can embed on your site, and a shareable **Weekly Top 5 Albums**
 image for social media. Both are single HTML files with no build step — set your username,
 deploy to GitHub Pages, and you're done. A landing page (`index.html`) links to both.
